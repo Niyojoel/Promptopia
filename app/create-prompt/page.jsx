@@ -5,19 +5,17 @@ import { usePromptContext } from "@components/context";
 import { DB } from "@data/db";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import {v4 as uuidv4} from 'uuid';
 
+//moved submitting state to context
 const CreatePrompt = ()=> {
     const {data: session} = useSession();
-    const {promptForm, setPromptForm, fetchResponse} = usePromptContext();
+    const {promptForm, fetchResponse, setSubmitting} = usePromptContext();
     let router = useRouter();
     const {userDB} = DB();
 
     if (!(session?.user?.id || userDB.id)) return router.push('/')
 
-    const [submitting, setSubmitting] = useState(false);
-    
     const createPrompt = async (e)=> {
         e.preventDefault();
         setSubmitting(true);
@@ -42,9 +40,6 @@ const CreatePrompt = ()=> {
 
     return (<Form
         type= "Create"
-        post = {promptForm}
-        setPost = {setPromptForm}
-        submitting = {submitting}
         handleSubmit = {createPrompt}
     />)
 } 

@@ -15,12 +15,6 @@ const ProfilePage =()=> {
 
     if (!(session?.user?.id || userDB.id)) return router.push('/')
 
-
-    const handleTagClick = (tag)=> {
-        console.log("click on tag")
-        router.push(`/prompts?tag=${tag}`); // _id
-    }
-
     const handleEdit = (post)=> {
         router.push(`/update-prompt?id=${post.id}`); // _id
     }
@@ -49,7 +43,6 @@ const ProfilePage =()=> {
           name="My" 
           desc="Welcome to your personalized profile page"
           data={posts}
-          handleTagClick ={handleTagClick}
           handleEdit={handleEdit}
           handleDelete = {handleDelete}
         />

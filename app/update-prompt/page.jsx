@@ -8,18 +8,22 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+//moved submitting state to context
 const UpdatePrompt = ()=> {
     const {data: session} = useSession();
     let router = useRouter();
-    const {promptForm, setPromptForm} = usePromptContext();
+    const {
+        posts,
+        promptForm, 
+        setPromptForm, 
+        fetchResponse, 
+        setSubmitting
+    } = usePromptContext();
     const {userDB} = DB();
 
     if (!(session?.user?.id || userDB.id)) return router.push('/')
 
-    const [submitting, setSubmitting] = useState(false);
-    
     const searchParams = useSearchParams();
-
     const promptId = searchParams.get('id');
 
     const updatePrompt = async (e)=> {
@@ -27,7 +31,7 @@ const UpdatePrompt = ()=> {
         setSubmitting(true);
 
         if (!promptId) return alert('Prompt ID is missing');
-
+        console.log(promptForm)
         try {
             const response = fetchResponse({
                endpoint:`/api/prompt/${promptId}`, 
@@ -36,7 +40,7 @@ const UpdatePrompt = ()=> {
             });
    
             if(response) { //response.ok
-                router.push('/');
+                router.push("/");
                 return;
             };
 
@@ -45,23 +49,18 @@ const UpdatePrompt = ()=> {
         };
     };
 
+    const getPromptDetails = async (ID) => {
+      await fetchResponse({endpoint:`/api/prompt/${ID}`, method:'GET', payload: {}});
+    };
+    
     useEffect(()=> {
-        const getPromptDetails = async () => {
-        const response = fetchResponse({endpoint:`/api/prompt/${promptId}`, method:'GET', payload: {}})
-        
-        const localResponse = response?.find(resp => resp.id === promptId);
-        const {prompt, tag} = localResponse;
-        console.log(localResponse);
-        setPromptForm({prompt, tag});
-        };
-        if(promptId) getPromptDetails();
+        getPromptDetails(promptId);
     }, [promptId])
+    
+      console.log(posts)
 
     return (<Form
             type= "Edit"
-            post = {promptForm}
-            setPost = {setPromptForm}
-            submitting = {submitting}
             handleSubmit = {updatePrompt}
         />)
 } 

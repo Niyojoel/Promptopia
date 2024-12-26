@@ -1,7 +1,10 @@
 import Link from "next/link";
 import {createPost} from "@data/content"
+import { usePromptContext } from "./context";
 
-const Form = ({type, post, setPost, submitting, handleSubmit}) => {
+const Form = ({type, handleSubmit}) => {
+  const {submitting, promptForm, setPromptForm} = usePromptContext();
+
   return (
     <section className="w-full max-w-full flex-start flex-col">
       <h1 className="head_text text-left">
@@ -17,14 +20,14 @@ const Form = ({type, post, setPost, submitting, handleSubmit}) => {
             {createPost.promptLabel}
           </span>
         </label>
-        <textarea value={post.prompt} id="prompt_content" onChange={(e)=> setPost({...post, prompt:e.target.value})} placeholder="Write your prompt here..."  className="form_textarea" autoFocus={true} required/>
+        <textarea value={promptForm.prompt} id="prompt_content" onChange={(e)=> setPromptForm({...promptForm, prompt:e.target.value})} placeholder="Write your prompt here..."  className="form_textarea" autoFocus={true} required/>
 
         <label htmlFor="prompt_tag">
           <span className="font-semibold text-base text-gray-700"> 
             {createPost.promptTag} <span className="font-normal"> (#product, #webdev, #idea)</span>
           </span>
         </label>
-        <input value={post.tag} id="prompt_tag" onChange={(e)=> setPost({...post, tag:e.target.value})} placeholder="#tag"  className="form_input" required/>
+        <input value={promptForm.tag} id="prompt_tag" onChange={(e)=> setPromptForm({...promptForm, tag:e.target.value})} placeholder="#tag"  className="form_input" required/>
 
         <div className="flex-end mx-3 mb-5 gap-4">
           <Link href="/" className="text-gray-500 text-sm"> 

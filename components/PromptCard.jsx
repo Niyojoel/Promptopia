@@ -5,22 +5,41 @@ import { DB } from "@data/db"
 import { useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link";
-import { usePathname} from "next/navigation"
-import { useState } from "react"
+import { usePathname, useSearchParams} from "next/navigation"
+import { useState, useEffect } from "react"
+import { usePromptContext } from "./context";
 
-const PromptCard = ({post, handleTagClick, handleEdit, handleDelete}) => {
+//moved handleTagClick to context
+const PromptCard = ({post, handleEdit, handleDelete}) => {
+
   const {data: session} = useSession();
   const {userDB} = DB();
+  const {handleTagClick, fetchResponse} = usePromptContext();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const [copied, setCopied] = useState("")
 
-  const pathname = usePathname()
 
-  const handleCopy = ()=> {
+  const handlePromptCopy = ()=> {
     setCopied(post.prompt);
     navigator.clipboard.writeText(post.prompt);
     setTimeout(() => setCopied(""), 3000);
   }
+
+  const postFetchByTag = (pathname, params)=> {
+    //feed for tag filter
+    if(pathname === `/prompts` && params.get("tag")) {
+      const tag = params.get("tag");
+      console.log("on tag filter page")
+      fetchResponse({endpoint:`/api/prompt?tag=${tag}`,  method:'GET', payload: {}}); 
+      return;
+    }
+  }
+  
+  useEffect(()=> {
+    postFetchByTag(pathname, searchParams)
+  }, [pathname, searchParams]);
 
   return (
     <article className="prompt_card">
@@ -41,7 +60,7 @@ const PromptCard = ({post, handleTagClick, handleEdit, handleDelete}) => {
             <p className="font-inter text-sm text-gray-500">{post?.author?.email || userDB.email}</p>
           </div>
         </div>
-        <div className="copy_btn" onClick={handleCopy}>
+        <div className="copy_btn" onClick={handlePromptCopy}>
           <Image src={copied === post.prompt ? svgs.tick : svgs.copy} width={12} height={12} alt="copy-svg"/>
         </div>
       </div>

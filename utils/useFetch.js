@@ -18,6 +18,13 @@ export const fetchPosts = async (endPoint="GET", method, payload={}) => {
 
       let searchWord;
       
+      if (endPoint.includes('/api/prompt/') && endPoint.split("/")[2]){
+         console.log(endPoint.split("/")[3]);
+         localResponse = localResponse?.find(
+           (response) => response.id === endPoint.split("/")[3]
+         );
+      }
+
       if (endPoint.includes("?")){
         searchWord = endPoint.slice(endPoint.indexOf("=") + 1).toLowerCase();
         console.log("endpoint with query");
@@ -58,7 +65,7 @@ export const fetchPosts = async (endPoint="GET", method, payload={}) => {
 
       if (method === "POST") {
         const duplicatePost = posts?.find(
-          (post) => post.prompt === payload.prompt
+          (post) => post.prompt.toLowerCase() === payload.prompt.toLowerCase()
         );
         console.log(duplicatePost);
         if (duplicatePost === undefined) {
@@ -72,10 +79,12 @@ export const fetchPosts = async (endPoint="GET", method, payload={}) => {
     }
 
     if (method === 'PATCH') {
-
+      console.log('patch method on the way')
+      console.log(endPoint.split("/")[endPoint.split("/").length - 1])
       storedPosts = storedPosts.map(post => {
-        if (post.id === endPoint.split("/")[-1]) {
+        if (post.id === endPoint.split("/")[endPoint.split("/").length - 1]) {
           post = {...post, prompt: payload.prompt, tag: payload.tag };
+          console.log(post);
           return post;
         }
         return post;
@@ -94,7 +103,7 @@ export const fetchPosts = async (endPoint="GET", method, payload={}) => {
       );
       setStorage(storedPosts);
 
-      // return "Prompt deleted successfully";
+      return "Prompt deleted successfully";
     }
     // const data = await response.json();
   } catch (error) {

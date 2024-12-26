@@ -4,23 +4,17 @@ import { useState, useEffect } from "react"
 import { DB } from "@data/db";
 import Link from "next/link";
 import Image from "next/image";
-import {signIn, signOut, getProviders, useSession} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import { nav } from "@data/content";
+import { SignIn } from "@components/SignIn";
 
 const Nav = () => {
   const {data: session} = useSession();
-    const {userDB} = DB();
+  const {userDB} = DB();
 
-
-  const [providers, setProviders] = useState(null);
   const [toggleDropdown, setToggleDropdown] = useState(false);
 
   useEffect(()=> {
-    const setUpProviders = async ()=>{
-      const response = await getProviders();
-      setProviders(response);
-    };
-    setUpProviders();
     window.addEventListener("resize", () => {setToggleDropdown(false)});
   }, [])
 
@@ -46,7 +40,7 @@ const Nav = () => {
             </Link>
           </div>
           ): (
-          <SignIn providers={providers}/>
+          <SignIn/>
         )}
       </div>
 
@@ -74,21 +68,11 @@ const Nav = () => {
             )}
           </div>
           ): (
-          <SignIn providers={providers}/>
+          <SignIn/>
         )}
       </div>
     </nav>
   )
 }
-
-const SignIn = ({providers})=> (
-  <>
-  {providers && Object.values(providers).map((provider)=> (
-    <button type="button" key={provider.name} onClick={()=> signIn(provider.id)} className="black_btn">
-      Sign In
-    </button>
-  ))}
-  </>
-)
 
 export default Nav

@@ -10,6 +10,9 @@ const PromptContext = createContext(null);
 
 export const PromptProvider = ({children})=> {
 
+    const router = useRouter();
+    const pathname = usePathname();
+
     const [promptForm, setPromptForm] = useState({
         prompt: "",
         tag: ""
@@ -24,16 +27,28 @@ export const PromptProvider = ({children})=> {
     //api call function
     const fetchResponse = async (fetchParams) => {
         const response  = await fetchPosts(fetchParams.endpoint, fetchParams.method, fetchParams.payload)
-        console.log(response);
+        // console.log(response);
 
+        
         if(fetchParams.method = "GET") {
+            console.log(pathname)
+            if(pathname === '/update-prompt') {
+                return response ? setPromptForm({prompt: response.prompt, tag: response.tag}) : setPromptForm({}); //setPosts(response.data);
+            }
             response ? setPosts(response) : setPosts([]); //setPosts(response.data);
-            return;
         }
-        return response;
+        // return response;
     }
 
-    return <PromptContext.Provider value= {{fetchResponse, posts,  setPosts, promptForm, setPromptForm, searchTerm, setSearchTerm, searchTag, setSearchTag, submitting, setSubmitting}}>
+    const handleTagClick = (tag)=> {
+      try{
+        router.push(`/prompts?tag=${tag.replace("#", "")}`)
+      }catch (error) {
+        console.log(error);
+      } 
+    }
+
+    return <PromptContext.Provider value= {{fetchResponse, posts,  setPosts, promptForm, setPromptForm, searchTerm, setSearchTerm, searchTag, setSearchTag, submitting, setSubmitting, handleTagClick}}>
         {children}
     </PromptContext.Provider>
 }
