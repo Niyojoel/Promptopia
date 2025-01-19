@@ -10,7 +10,7 @@ import {v4 as uuidv4} from 'uuid';
 //moved submitting state to context
 const CreatePrompt = ()=> {
     const {data: session} = useSession();
-    const {promptForm, fetchResponse, setSubmitting} = usePromptContext();
+    const {promptForm, fetchResponse, setSubmitting, responseStatus, setResponseStatus} = usePromptContext();
     let router = useRouter();
     const {userDB} = DB();
 
@@ -21,22 +21,29 @@ const CreatePrompt = ()=> {
         setSubmitting(true);
 
         try {
-           const newPrompt = {id: uuidv4(), author: {...userDB}, ...promptForm}; 
-            const response = fetchResponse({
+            const newPrompt = {userId: session?.user?.id, ...promptForm}; 
+            const response = await fetchResponse({
                 endpoint:"api/prompt/new", 
                 method:'POST', 
                 payload: {...newPrompt}
             });
 
-            if(response) { //response.ok
-                router.push('/');
-                return;
+            if(response.ok) {
+                setResponseStatus("success")
             };
             
         }catch(error) {
+            setResponseStatus("failure");
             console.log(error)
-        };
+        }finally {
+            setSubmitting(false);
+        }
     }
+
+    useEffect(()=> {
+        responseStatus === "success" && router.push('/'); 
+        setResponseStatus("");
+    }, [responseStatus])
 
     return (<Form
         type= "Create"

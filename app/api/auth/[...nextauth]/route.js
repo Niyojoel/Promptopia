@@ -3,6 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { connectToDB } from '@utils/database';
 import User from "@models/user"
 
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -24,16 +25,19 @@ const handler = NextAuth({
         try {
             await connectToDB();
 
+            console.log(profile)
+
             //check if a user already exits
-            const existingUser = await User.findOne({
+            let existingUser = await User.findOne({
                 email: profile.email
             });
+
 
             //if not create the user
             if (!existingUser) {
                 const user = await User.create({
                     email: profile.email,
-                    username: profile.username.replace(" ", "").toLowerCase(),
+                    username: profile.name.replace(" ", "").toLowerCase(),
                     image: profile.picture
                 });
             };

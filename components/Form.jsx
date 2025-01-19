@@ -27,7 +27,7 @@ const Form = ({type, handleSubmit}) => {
             {createPost.promptTag} <span className="font-normal"> (#product, #webdev, #idea)</span>
           </span>
         </label>
-        <input value={promptForm.tag} id="prompt_tag" onChange={(e)=> setPromptForm({...promptForm, tag:e.target.value})} placeholder="#tag"  className="form_input" required/>
+        <input value={promptForm.tag} id="prompt_tag" onChange={(e)=> setPromptForm({...promptForm, tag:e.target.value})} placeholder="product, webdev, idea"  className="form_input" required/>
 
         <div className="flex-end mx-3 mb-5 gap-4">
           <Link href="/" className="text-gray-500 text-sm"> 

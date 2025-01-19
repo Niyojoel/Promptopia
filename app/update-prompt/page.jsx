@@ -17,11 +17,13 @@ const UpdatePrompt = ()=> {
         promptForm, 
         setPromptForm, 
         fetchResponse, 
-        setSubmitting
+        setSubmitting,
+        responseStatus,
+        setResponseStatus
     } = usePromptContext();
     const {userDB} = DB();
 
-    if (!(session?.user?.id || userDB.id)) return router.push('/')
+    if (!(session?.user?.id)) return router.push('/')
 
     const searchParams = useSearchParams();
     const promptId = searchParams.get('id');
@@ -33,20 +35,25 @@ const UpdatePrompt = ()=> {
         if (!promptId) return alert('Prompt ID is missing');
         console.log(promptForm)
         try {
-            const response = fetchResponse({
+            const response = await fetchResponse({
                endpoint:`/api/prompt/${promptId}`, 
                method:'PATCH', 
                payload: {...promptForm}
             });
+
+            console.log("before routing back home")
    
-            if(response) { //response.ok
-                router.push("/");
-                return;
+            if(response.ok) {
+                setResponseStatus("success")
             };
 
         }catch(error) {
+            setResponseStatus("failure");
             console.log(error)
-        };
+        }
+        finally {
+            setSubmitting(false);
+        }
     };
 
     const getPromptDetails = async (ID) => {
@@ -56,6 +63,11 @@ const UpdatePrompt = ()=> {
     useEffect(()=> {
         getPromptDetails(promptId);
     }, [promptId])
+
+    useEffect(()=> {
+        responseStatus === "success" && router.push('/'); 
+        setResponseStatus("");
+    }, [responseStatus])
     
       console.log(posts)
 

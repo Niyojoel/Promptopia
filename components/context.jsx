@@ -1,10 +1,9 @@
 'use client'
 
 import { fetchPosts } from "@utils/useFetch";
-import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 
-const { createContext, useContext, useState, useEffect } = require("react")
+const { createContext, useContext, useState} = require("react")
 
 const PromptContext = createContext(null);
 
@@ -17,6 +16,7 @@ export const PromptProvider = ({children})=> {
         prompt: "",
         tag: ""
     });
+    const [responseStatus, setResponseStatus] =useState("");
     const [searchTerm, setSearchTerm] = useState("")
     const [searchTag, setSearchTag] = useState("")
 
@@ -26,19 +26,34 @@ export const PromptProvider = ({children})=> {
 
     //api call function
     const fetchResponse = async (fetchParams) => {
+        const method = fetchParams.method;
         const response  = await fetchPosts(fetchParams.endpoint, fetchParams.method, fetchParams.payload)
-        // console.log(response);
 
+        console.log(response);
+        const data = await response.json();
+
+        if(method === "GET") populatePosts(data);
+        if(method === "GET" && pathname === '/update-prompt') populatePrompt(data);
         
-        if(fetchParams.method = "GET") {
-            console.log(pathname)
-            if(pathname === '/update-prompt') {
-                return response ? setPromptForm({prompt: response.prompt, tag: response.tag}) : setPromptForm({}); //setPosts(response.data);
-            }
-            response ? setPosts(response) : setPosts([]); //setPosts(response.data);
-        }
-        // return response;
+        return response;
     }
+
+    //Syncing local variable with fetched data ----------
+
+    const populatePosts = (data)=> {
+        return data ? setPosts(data) : setPosts([]); 
+    }
+
+    //for updatePrompt form
+    const populatePrompt = (data)=>{
+        return data ? setPromptForm({prompt: data.prompt, tag: data.tag}) : setPromptForm({});
+    } 
+
+    //Effecting delete on posts
+    const updatePosts = (id)=> {
+        setPosts(prevPosts => prevPosts.filter(post=> post._id !== id));
+    }
+    //-----------------------
 
     const handleTagClick = (tag)=> {
       try{
@@ -48,7 +63,7 @@ export const PromptProvider = ({children})=> {
       } 
     }
 
-    return <PromptContext.Provider value= {{fetchResponse, posts,  setPosts, promptForm, setPromptForm, searchTerm, setSearchTerm, searchTag, setSearchTag, submitting, setSubmitting, handleTagClick}}>
+    return <PromptContext.Provider value= {{fetchResponse, updatePosts, posts,  setPosts, promptForm, setPromptForm, searchTerm, setSearchTerm, searchTag, setSearchTag, submitting, setSubmitting, responseStatus, setResponseStatus, handleTagClick}}>
         {children}
     </PromptContext.Provider>
 }

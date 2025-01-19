@@ -19,18 +19,18 @@ const Nav = () => {
   }, [])
 
   return (
-    <nav className="flex-between w-full mb-16 pt-3">
+    <nav className="flex-between w-full mt-2 mb-16 pt-3">
       <Link href="/" className="flex gap-2 flex-center">
-        <Image src={nav.logo} width={30} height={30} alt="Promptopia logo" className="object-contain"/>
+        <Image src={nav.logo} width={30} height={30} alt="promptopia_logo" className="object-contain"/>
         <p className="logo_text">Promptopia</p>
       </Link>
 
       {/* Desktop navigation */}
-      <div className="sm:flex hidden">
+      <div className={`sm:flex hidden opacity-0 transition-opacity duration-500 ${session?.user && "opacity-100"}`}>
         {session?.user ? (
-          <div className="flex gap-3 md:gap-5">
+          <div className={`flex flex-1 gap-3 md:gap-5`}>
             <Link href="/create-prompt" className="black_btn">
-              Create Post
+              Create Prompt
             </Link>
             <button type="button" className="outline_btn" onClick={signOut}>
               Sign Out
@@ -45,7 +45,7 @@ const Nav = () => {
       </div>
 
       {/* Mobile navigation */}
-      <div className="sm:hidden flex relative">
+      <div className={`sm:hidden flex relative opacity-0 transition-opacity duration-500 ${session?.user && "opacity-100"}`}>
         {session?.user ? (
           <div className="flex">
             <Image src={session?.user?.image || userDB.image} alt="profile-img" width={37} height={37} className="rounded-full" onClick={()=> setToggleDropdown(dropdown => !dropdown)}/>

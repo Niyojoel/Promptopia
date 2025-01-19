@@ -5,7 +5,9 @@ export const GET = async (req, {params}) => {
   try {
     await connectToDB();
 
-    const prompt = await Prompt.findById(params.id).populate("author");
+    const params_ = await params
+
+    const prompt = await Prompt.findById(params_.id).populate("author");
 
     if(!prompt) return new Response ("Prompt not found", {status: 404})
     return new Response(JSON.stringify(prompt), { status: 200 });
@@ -19,9 +21,11 @@ export const PATCH = async (req, { params }) => {
   try {
     await connectToDB();
 
+    const params_ = await params;
+
     const {prompt, tag} = await req.json();
 
-    const existingPrompt = await Prompt.findById(params.id);
+    let existingPrompt = await Prompt.findById(params_.id);
 
     if(!existingPrompt) return new Response("Prompt not found", { status: 404 });
 
@@ -40,11 +44,13 @@ export const DELETE = async (req, {params}) => {
   try {
     await connectToDB();
 
-    const existingPrompt = await Prompt.findById(params.id);
+    const params_ = await params;
+
+    const existingPrompt = await Prompt.findById(params_.id);
 
     if (!existingPrompt) return new Response("Prompt not found", { status: 404 });
 
-    await existingPrompt.remove();
+    await Prompt.findByIdAndDelete(params_.id);
 
     return new Response(JSON.stringify("Prompt declared successfully"), { status: 200 });
   } catch (error) {

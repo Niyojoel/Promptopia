@@ -13,6 +13,7 @@ export const SignIn = ()=> {
     setUpProviders();
   }, [])
 
+  
   return (
     <>
     {providers && Object.values(providers).map((provider)=> (

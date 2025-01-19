@@ -5,21 +5,16 @@ import { DB } from "@data/db"
 import { useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link";
-import { usePathname, useSearchParams} from "next/navigation"
-import { useState, useEffect } from "react"
-import { usePromptContext } from "./context";
+import { usePathname} from "next/navigation"
+import { useState } from "react"
 
 //moved handleTagClick to context
-const PromptCard = ({post, handleEdit, handleDelete}) => {
-
+const PromptCard = ({post, handleEdit, handleDelete, handleTagClick}) => {
   const {data: session} = useSession();
   const {userDB} = DB();
-  const {handleTagClick, fetchResponse} = usePromptContext();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
 
   const [copied, setCopied] = useState("")
-
 
   const handlePromptCopy = ()=> {
     setCopied(post.prompt);
@@ -27,27 +22,13 @@ const PromptCard = ({post, handleEdit, handleDelete}) => {
     setTimeout(() => setCopied(""), 3000);
   }
 
-  const postFetchByTag = (pathname, params)=> {
-    //feed for tag filter
-    if(pathname === `/prompts` && params.get("tag")) {
-      const tag = params.get("tag");
-      console.log("on tag filter page")
-      fetchResponse({endpoint:`/api/prompt?tag=${tag}`,  method:'GET', payload: {}}); 
-      return;
-    }
-  }
-  
-  useEffect(()=> {
-    postFetchByTag(pathname, searchParams)
-  }, [pathname, searchParams]);
-
   return (
     <article className="prompt_card">
       <div className="flex justify-between items-start gap-5">
         <div className="flex-1 flex justify-start items-center gap-3">
           <Link href="/profile">
             <Image 
-            src={post?.author?.image} alt="user_image" 
+            src={post?.author?.image || userDB.image} alt="user_image" 
             width={40} 
             height={40} 
             className="rounded-full object-contain"
@@ -66,16 +47,15 @@ const PromptCard = ({post, handleEdit, handleDelete}) => {
       </div>
       <p className="my-4 font-satoshi text-[15px] text-gray-700">{post.prompt}</p>
       <div className="flex gap-3">
-        {Object.values(post.tag.split(" ")).map((tag, index) => (
+        {Object.values(post.tag.replace("  ", " ").split(" ")).map((tag, index) => (
           <p key={`${tag}${index}`} className="font-inter text-sm blue_gradient cursor-pointer" onClick={()=> {handleTagClick && handleTagClick(tag)}}>
-            <span className="text-gray-500">#</span>{tag.includes("#") ? tag.replace("#",'') : {tag}}
+            <span className="text-gray-500">#</span>{tag.includes("#") ? tag.replace("#",'') : tag}
           </p>
           )
         )}
       </div>
       
-      {((session?.user?.id === post?.author?._id || userDB.id === post?.author?.id) && pathname ==="/profile") && (
-        //_id
+      {(session?.user?.id === post?.author?._id && pathname ==="/profile") && (
         <div className="mt-3 flex-center gap-6 border-t border-gray-100 pt-3">
           <p className="font-inter text-sm green_gradient cursor-pointer" onClick={() => handleEdit && handleEdit(post)}>
             Edit
