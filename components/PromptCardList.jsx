@@ -14,23 +14,24 @@ const PromptCardList = ({margin, handleDelete, handleEdit})=> {
     const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(true);
 
-    const postFetchByTag = (pathname, params)=> {
-        //feed for tag filter
-        if(pathname === `/prompts` && params.get("tag")) {
-            const tag = params.get("tag");
-            console.log("on tag filter page")
-            fetchResponse({endpoint:`/api/prompt?tag=${tag}`,  method:'GET', payload: {}}); 
-        }
-
-        if(pathname === '/profile' && session?.user?.id) {
-            fetchResponse({endpoint: `/api/users/${session?.user?.id}/posts`, method:'GET', payload: {}})
-        };
-        setIsLoading(false);
-    }
+   
     
     useEffect(()=> {
         setIsLoading(true);
         setPosts(null)
+        const postFetchByTag = (pathname, params)=> {
+            //feed for tag filter
+            if(pathname === `/prompts` && params.get("tag")) {
+                const tag = params.get("tag");
+                console.log("on tag filter page")
+                fetchResponse({endpoint:`/api/prompt?tag=${tag}`,  method:'GET', payload: {}}); 
+            }
+
+            if(pathname === '/profile' && session?.user?.id) {
+                fetchResponse({endpoint: `/api/users/${session?.user?.id}/posts`, method:'GET', payload: {}})
+            };
+            setIsLoading(false);
+        }
         postFetchByTag(pathname, searchParams);
     }, [pathname]);
 

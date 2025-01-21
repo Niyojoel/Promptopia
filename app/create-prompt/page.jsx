@@ -15,8 +15,6 @@ const CreatePrompt = ()=> {
     let router = useRouter();
     const {userDB} = DB();
 
-    if (!(session?.user?.id || userDB.id)) return router.push('/')
-
     const createPrompt = async (e)=> {
         e.preventDefault();
         setSubmitting(true);
@@ -44,7 +42,9 @@ const CreatePrompt = ()=> {
     useEffect(()=> {
         responseStatus === "success" && router.push('/'); 
         setResponseStatus("");
-    }, [responseStatus])
+    }, [responseStatus, router])
+
+    if (!(session?.user?.id || userDB.id)) return router.push('/')
 
     return (<Form
         type= "Create"

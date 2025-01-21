@@ -3,7 +3,6 @@
 import Form from "@components/Form";
 import { usePromptContext } from "@components/context";
 import { DB } from "@data/db";
-import { fetchPosts } from "@utils/useFetch";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,7 +14,6 @@ const UpdatePrompt = ()=> {
     const {
         posts,
         promptForm, 
-        setPromptForm, 
         fetchResponse, 
         setSubmitting,
         responseStatus,
@@ -23,7 +21,6 @@ const UpdatePrompt = ()=> {
     } = usePromptContext();
     const {userDB} = DB();
 
-    if (!(session?.user?.id)) return router.push('/')
 
     const searchParams = useSearchParams();
     const promptId = searchParams.get('id');
@@ -56,18 +53,19 @@ const UpdatePrompt = ()=> {
         }
     };
 
-    const getPromptDetails = async (ID) => {
-      await fetchResponse({endpoint:`/api/prompt/${ID}`, method:'GET', payload: {}});
-    };
-    
     useEffect(()=> {
+        const getPromptDetails = async (ID) => {
+          await fetchResponse({endpoint:`/api/prompt/${ID}`, method:'GET', payload: {}});
+        };
         getPromptDetails(promptId);
     }, [promptId])
 
     useEffect(()=> {
         responseStatus === "success" && router.push('/'); 
         setResponseStatus("");
-    }, [responseStatus])
+    }, [responseStatus, setResponseStatus, router])
+
+    if (!(session?.user?.id)) return router.push('/')
     
       console.log(posts)
 

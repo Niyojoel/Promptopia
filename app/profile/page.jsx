@@ -33,7 +33,7 @@ const ProfilePage =()=> {
     if (!session?.user?.id) {
         router.replace("/");
     }
-    },[session])
+    },[session, router])
 
     return (
         <Profile

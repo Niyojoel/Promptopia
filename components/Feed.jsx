@@ -24,30 +24,34 @@ const Feed = () => {
 
 
   //Fetching posts for feed
-  const feedPostsFetch = (pathname, params)=> {
-    //feed for home page
-    if(pathname === "/") {
-      console.log("fetching posts")
-      fetchResponse({endpoint:"/api/prompt", 
-      method:'GET', payload: {}});
-    }; 
-
-    //search feed
-    if(pathname === `/prompts` && params.get("search")) {
-      const search = params.get("search");
-      setSearchTerm(search);
-      console.log("on search page");
-      fetchResponse({endpoint:`/api/prompt?search=${search}`, method:'GET', payload: {}});
-    };
-  }
+  
   
   useEffect(()=> {
+    const feedPostsFetch = (pathname, params)=> {
+      //feed for home page
+      if(pathname === "/") {
+        console.log("fetching posts")
+        fetchResponse({endpoint:"/api/prompt", 
+        method:'GET', payload: {}});
+      }; 
+
+      //search feed
+      if(pathname === `/prompts` && params.get("search")) {
+        const search = params.get("search");
+        setSearchTerm(search);
+        console.log("on search page");
+        fetchResponse({endpoint:`/api/prompt?search=${search}`, method:'GET', payload: {}});
+      };
+    };
     feedPostsFetch(pathname, searchParams)
   }, [pathname, searchParams]);
 
-
+  
   useEffect(()=> {
-    searchTerm && fetchResponse({endpoint:`/api/prompt?search=${searchTerm}`, method:'GET', payload: {}});
+    const fetchSearch = (searchTerm)=> {
+     fetchResponse({endpoint:`/api/prompt?search=${searchTerm}`, method:'GET', payload: {}});
+    }
+    searchTerm && fetchSearch(searchTerm)
   },[searchTerm]);
   
   return (
