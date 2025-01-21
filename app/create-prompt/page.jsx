@@ -5,6 +5,7 @@ import { usePromptContext } from "@components/context";
 import { DB } from "@data/db";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {v4 as uuidv4} from 'uuid';
 
 //moved submitting state to context
