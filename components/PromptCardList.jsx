@@ -33,7 +33,7 @@ const PromptCardList = ({margin, handleDelete, handleEdit})=> {
             setIsLoading(false);
         }
         postFetchByTag(pathname, searchParams);
-    }, [pathname]);
+    }, [pathname, setIsLoading, setPosts, session, searchParams]);
 
 
     return (

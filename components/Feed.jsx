@@ -21,12 +21,9 @@ const Feed = () => {
     }
     router.push("/");
   }
-
-
-  //Fetching posts for feed
-  
   
   useEffect(()=> {
+    //Fetching posts for feed
     const feedPostsFetch = (pathname, params)=> {
       //feed for home page
       if(pathname === "/") {
